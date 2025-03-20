@@ -1,3 +1,4 @@
+import 'package:bus_reservation_flutter_starter/pages/search_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,12 +11,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primaryColor: Colors.lightGreen,
+        brightness: Brightness.dark,
+        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
+        // useMaterial3: true,
       ),
-      home: const Scaffold(),
+      home: SearchPage(),
     );
   }
 }
