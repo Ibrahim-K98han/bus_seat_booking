@@ -1,3 +1,4 @@
+import 'package:bus_reservation_flutter_starter/datasource/temp_db.dart';
 import 'package:bus_reservation_flutter_starter/utils/constants.dart';
 import 'package:bus_reservation_flutter_starter/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
@@ -13,94 +14,112 @@ class _SearchPageState extends State<SearchPage> {
   String? fromCity, toCity;
   DateTime? departureDate;
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Search'),
       ),
-      body: Form(
-        child: Center(
-          child: ListView(
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(8),
-            children: [
-              DropdownButtonFormField(
-                value: fromCity,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return emptyFieldErrMessage;
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                  errorStyle: TextStyle(
-                    color: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Form(
+          key: _formKey,
+          child: Center(
+            child: ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(8),
+              children: [
+                DropdownButtonFormField(
+                  value: fromCity,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return emptyFieldErrMessage;
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                    errorStyle: TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                hint: const Text(
-                  'Form',
-                  style: TextStyle(color: Colors.white),
-                ),
-                isExpanded: true,
-                items: cities
-                    .map(
-                      (city) => DropdownMenuItem(
-                        value: city,
-                        child: Text(city),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  fromCity = value;
-                },
-              ),
-              const SizedBox(height: 20),
-              DropdownButtonFormField(
-                value: toCity,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return emptyFieldErrMessage;
-                  }
-                  return null;
-                },
-                decoration: const InputDecoration(
-                  errorStyle: TextStyle(
-                    color: Colors.white,
+                  hint: const Text(
+                    'Form',
+                    style: TextStyle(color: Colors.white),
                   ),
+                  isExpanded: true,
+                  items: cities
+                      .map(
+                        (city) => DropdownMenuItem(
+                          value: city,
+                          child: Text(city),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    fromCity = value;
+                  },
                 ),
-                hint: const Text(
-                  'To',
-                  style: TextStyle(color: Colors.white),
+                const SizedBox(height: 20),
+                DropdownButtonFormField(
+                  value: toCity,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return emptyFieldErrMessage;
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                    errorStyle: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  hint: const Text(
+                    'To',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  isExpanded: true,
+                  items: cities
+                      .map(
+                        (city) => DropdownMenuItem(
+                          value: city,
+                          child: Text(city),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    toCity = value;
+                  },
                 ),
-                isExpanded: true,
-                items: cities
-                    .map(
-                      (city) => DropdownMenuItem(
-                        value: city,
-                        child: Text(city),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  toCity = value;
-                },
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: _selectDate,
-                    child: const Text('Select Departure Date'),
-                  ),
-                  Text(
-                    departureDate == null
-                        ? 'No Date Chosen'
-                        : getFormattedDate(departureDate!),
-                  ),
-                ],
-              )
-            ],
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: _selectDate,
+                      child: const Text('Select Departure Date'),
+                    ),
+                    Text(
+                      departureDate == null
+                          ? 'No Date Chosen'
+                          : getFormattedDate(departureDate!),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.lightGreen,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      )),
+                  onPressed: _search,
+                  child: const Text('SEARCH'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -120,6 +139,23 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         departureDate = selectedDate;
       });
+    }
+  }
+
+  void _search() {
+    if (departureDate == null) {
+      showMsg(context, emptyDateErrMessage);
+      return;
+    }
+
+    if (_formKey.currentState!.validate()) {
+      try {
+        final route = TempDB.tableRoute.firstWhere((element) =>
+            element.cityFrom == fromCity && element.cityTo == toCity);
+        showMsg(context, route.routeName);
+      } on StateError catch (error) {
+        showMsg(context, 'No route found');
+      }
     }
   }
 }
