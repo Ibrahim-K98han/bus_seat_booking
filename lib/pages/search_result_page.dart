@@ -1,3 +1,4 @@
+import 'package:bus_reservation_flutter_starter/models/bus_schedule.dart';
 import 'package:bus_reservation_flutter_starter/models/but_route.dart';
 import 'package:bus_reservation_flutter_starter/providers/app_data_provider.dart';
 import 'package:bus_reservation_flutter_starter/utils/constants.dart';
@@ -12,8 +13,6 @@ class SearchResultPage extends StatelessWidget {
     final argList = ModalRoute.of(context)!.settings.arguments as List;
     final BusRoute route = argList[0];
     final String departureDate = argList[1];
-    final provider = Provider.of<AppDataProvider>(context);
-    provider.getSchedulesByRouteName(route.routeName);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Search Result'),
@@ -27,18 +26,98 @@ class SearchResultPage extends StatelessWidget {
               fontSize: 18,
             ),
           ),
-          Column(
-            children: provider.scheduleList
-                .map(
-                  (schedule) => ListTile(
-                    title: Text(schedule.bus.busName),
-                    subtitle: Text(schedule.bus.busType),
-                    trailing: Text('$currency${schedule.ticketPrice}'),
-                  ),
-                )
-                .toList(),
+          Consumer<AppDataProvider>(
+            builder: (context, provider, _) => FutureBuilder(
+              future: provider.getSchedulesByRouteName(route.routeName),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final scheduleList = snapshot.data!;
+                  return Column(
+                    children: scheduleList
+                        .map(
+                          (schedule) => ScheduleItemView(
+                            date: departureDate,
+                            schedule: schedule,
+                          ),
+                        )
+                        .toList(),
+                  );
+                }
+                if (snapshot.hasError) {
+                  return const Text('Filed to fetch data');
+                }
+                return const Text('Please wait');
+              },
+            ),
           )
         ],
+      ),
+    );
+  }
+}
+
+class ScheduleItemView extends StatelessWidget {
+  const ScheduleItemView(
+      {super.key, required this.date, required this.schedule});
+
+  final String date;
+  final BusSchedule schedule;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {},
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              title: Text(schedule.bus.busName),
+              subtitle: Text(schedule.bus.busType),
+              trailing: Text('$currency${schedule.ticketPrice}'),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    'From: ${schedule.busRoute.cityFrom}',
+                    style: const TextStyle(
+                      fontSize: 17,
+                    ),
+                  ),
+                  Text(
+                    'To: ${schedule.busRoute.cityTo}',
+                    style: const TextStyle(
+                      fontSize: 17,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    'Departure Time: ${schedule.departureTime}',
+                    style: const TextStyle(
+                      fontSize: 17,
+                    ),
+                  ),
+                  Text(
+                    'Total Seat: ${schedule.bus.totalSeat}',
+                    style: const TextStyle(
+                      fontSize: 17,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
