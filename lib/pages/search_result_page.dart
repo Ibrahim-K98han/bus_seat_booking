@@ -66,7 +66,8 @@ class ScheduleItemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () => Navigator.pushNamed(context, routeNameSeatPlanPage,
+          arguments: [schedule, date]),
       child: Card(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
