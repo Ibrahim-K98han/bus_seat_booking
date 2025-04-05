@@ -1,5 +1,7 @@
+import 'package:bus_reservation_flutter_starter/customwidgets/seat_plan_view.dart';
 import 'package:bus_reservation_flutter_starter/models/bus_schedule.dart';
 import 'package:bus_reservation_flutter_starter/utils/colors.dart';
+import 'package:bus_reservation_flutter_starter/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class SeatPlanPage extends StatefulWidget {
@@ -40,7 +42,7 @@ class _SeatPlanPageState extends State<SeatPlanPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(right: 4),
+                  padding: const EdgeInsets.only(right: 8),
                   child: Row(
                     children: [
                       Container(
@@ -61,7 +63,7 @@ class _SeatPlanPageState extends State<SeatPlanPage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 4),
+                  padding: const EdgeInsets.only(left: 8),
                   child: Row(
                     children: [
                       Container(
@@ -89,6 +91,19 @@ class _SeatPlanPageState extends State<SeatPlanPage> {
               builder: (context, value, _) => Text(
                 'Selected: $value',
                 style: const TextStyle(fontSize: 16),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: SeatPlanView(
+                  totalSeat: schedule.bus.totalSeat,
+                  bookedSeatNumbers: bookedSeatNumbers,
+                  totalSeatBooked: totalSeatBooked,
+                  isBusinessClass: schedule.bus.busType == busTypeACBusiness,
+                  onSeatSelected: (value, seat) {
+
+                  },
+                ),
               ),
             ),
             OutlinedButton(
