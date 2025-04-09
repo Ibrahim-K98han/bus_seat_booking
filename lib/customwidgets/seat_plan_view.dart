@@ -33,9 +33,9 @@ class SeatPlanView extends StatelessWidget {
     final List<String> bookedSeatList =
         bookedSeatNumbers.isEmpty ? [] : bookedSeatNumbers.split(',');
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.all(8),
-      width: MediaQuery.of(context).size.width * 0.80,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.all(8),
+      width: MediaQuery.of(context).size.width * 0.90,
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
         borderRadius: BorderRadius.circular(10),
@@ -69,9 +69,9 @@ class SeatPlanView extends StatelessWidget {
                             },
                           ),
                           if (isBusinessClass && j == 0)
-                            const SizedBox(width: 24),
+                            const SizedBox(width: 20),
                           if (!isBusinessClass && j == 1)
-                            const SizedBox(width: 24),
+                            const SizedBox(width: 20),
                         ],
                       ),
                   ],
@@ -106,7 +106,12 @@ class _SeatState extends State<Seat> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        setState(() {
+          selected = !selected;
+        });
+        widget.onSelect(selected);
+      },
       child: Container(
         margin: const EdgeInsets.all(8),
         width: 50,
